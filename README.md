@@ -1,254 +1,144 @@
-# prueba-tecnica-cobranza-argentina
-prueba tecnica para el puesto de desarrollador jr
+# Inventario API – Prueba Técnica
 
-📦 Backend - API Cobranza Argentina
-📌 Descripción
+Este proyecto corresponde a una **API REST de Inventario** desarrollada como parte de una **prueba técnica**.  
+La aplicación implementa un **CRUD completo de productos**, protegido mediante **Spring Security**, autenticación con **JWT** y control de acceso basado en **roles**.
 
-Este proyecto es el backend de una aplicación para la gestión de cobranza, desarrollado con Spring Boot.
-Ofrece una API REST segura con Spring Security + JWT para la autenticación y autorización de usuarios, y permite manejar recursos como productos, usuarios y roles.
+---
 
-🚀 Funcionalidades Principales
+## Tecnologías utilizadas
 
-CRUD completo
+- Java 21  
+- Spring Boot  
+- Spring Security  
+- JWT (JSON Web Token)  
+- Spring Data JPA (Hibernate)  
+- MySQL  
+- Maven  
 
-Autenticación con JWT
+---
 
-Gestión de usuarios y roles
+##  Descripción general del sistema
 
-Autorización por roles para proteger rutas
+La aplicación expone una API REST que permite administrar un inventario de productos.  
+El acceso a los endpoints está protegido por autenticación y autorización mediante JWT.
 
-CORS configurado para Angular
+Características principales:
+- CRUD completo de productos
+- Autenticación con usuario y contraseña
+- Generación y validación de JWT
+- Control de acceso por roles
+- Usuarios precargados automáticamente
+- Contraseñas cifradas en base de datos
 
-Persistencia de datos con Spring Data JPA
+---
 
-Carga de datos iniciales automática (DataLoader)
+##  Seguridad y autenticación
 
-Manejo de DTOs para solicitudes y respuestas
+La seguridad se implementó usando **Spring Security + JWT**, manteniendo la API **stateless**.
 
-🛠️ Tecnologías
-Tecnología	Versión
-Java	17+
-Spring Boot	3.x
-Spring Security	6.x
-Spring Data JPA	-
-JWT	-
-Maven	-
-Base de Datos	MySQL / PostgreSQL
+### Flujo de autenticación
+1. El cliente envía credenciales al endpoint de login.
+2. El backend valida el usuario usando `CustomUserDetailsService`.
+3. Si las credenciales son correctas:
+   - Se genera un JWT
+   - Se devuelve el token junto con el usuario y su rol
+4. El cliente debe enviar el token en cada petición protegida:
 
-⚙️ Cómo ejecutar
+Authorization: Bearer <JWT>
 
-Clonar el repositorio
+---
 
-git clone https://github.com/enriqueamaral/prueba-tecnica-cobranza-argentina
+##  Roles del sistema
 
+| Rol | Descripción |
+|----|------------|
+| ROLE_ADMIN | Crear, actualizar y eliminar productos |
+| ROLE_USER | Consultar productos |
 
-Entrar al proyecto
+---
 
-cd prueba-tecnica-cobranza-argentina
+##  Endpoint de autenticación
 
+### Login
+POST `/api/v1/auth/login`
 
-Configurar la base de datos en application.properties
+Request:
+```json
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
 
-Construir y ejecutar
+Response:
+```json
+{
+  "username": "admin",
+  "role": "ROLE_ADMIN",
+  "token": "jwt_generado"
+}
+```
 
-mvn clean install
+---
 
+##  Endpoints de productos
+
+Base URL:
+http://localhost:8080/api/v1/products
+
+### Obtener todos los productos
+GET `/api/v1/products`  
+Roles: USER, ADMIN
+
+### Obtener producto por ID
+GET `/api/v1/products/{id}`  
+Roles: USER, ADMIN
+
+### Crear producto
+POST `/api/v1/products`  
+Rol: ADMIN
+
+### Actualizar producto
+PUT `/api/v1/products/{id}`  
+Rol: ADMIN
+
+### Eliminar producto
+DELETE `/api/v1/products/{id}`  
+Rol: ADMIN
+
+---
+
+## Usuarios precargados (DataLoader)
+
+| Usuario | Contraseña | Rol |
+|-------|-----------|-----|
+| admin | admin123 | ROLE_ADMIN |
+| user | user123 | ROLE_USER |
+
+Las contraseñas se almacenan cifradas con BCrypt.
+
+---
+
+##  Base de datos
+
+- MySQL
+- La base de datos debe existir previamente
+- Las tablas se generan automáticamente con JPA/Hibernate
+- Configuración en `application.properties`
+
+---
+
+##  Ejecución
+
+```bash
 mvn spring-boot:run
+```
 
-📂 Estructura del Proyecto
+---
 
-src/main/java/.../
+##  Notas finales
 
-├── controller/
-
-├── service/
-
-├── repository/
-
-├── entity/
-
-├── security/
-
-├── dto/
-
-├── config/
-
-└── loader/
-
-🧱 Entities (Tablas de BD)
-
-Las entidades representan las tablas de base de datos y se anotan así:
-
-@Entity
-
-@Table(name = "products")
-
-Explicación de anotaciones principales
-
-@Entity: Marca la clase como una entidad JPA.
-
-@Table(name = "..."): Define el nombre de la tabla.
-
-@Id + @GeneratedValue: Define la llave primaria generada automáticamente.
-
-@Column: Personaliza columnas (nullable, unique, etc).
-
-Esto permite que Hibernate mapee cada clase a una tabla física en la BD.
-
-📡 Controllers
-
-Los controladores exponen los endpoints de la API.
-
-Ejemplo: ProductController
-
-Rutas principales:
-
-Método	Ruta	Acción
-
-GET	/api/products	Listar productos
-
-POST	/api/products	Crear producto
-
-PUT	/api/products/{id}	Actualizar
-
-DELETE	/api/products/{id}	Eliminar
-
-Usan anotaciones como:
-
-@RestController
-
-@RequestMapping
-
-@GetMapping / @PostMapping / etc
-
-⚙️ Services
-
-La lógica de negocio está separada en servicios:
-
-Interfaz
-
-public interface ProductService
-
-Implementación
-
-@Service
-
-public class ProductServiceImpl
-
-Esto ayuda a mantener flexibilidad y permite implementar tests unitarios fácilmente.
-
-💾 Repositories
-
-Extienden de Spring Data JPA:
-
-public interface ProductRepository extends JpaRepository<Product, Long>
-
-Esto automáticamente te da métodos como:
-
-findAll()
-
-findById()
-
-save()
-
-deleteById()
-
-Sin necesidad de escribir SQL manual.
-
-🔐 Seguridad (Spring Security + JWT)
-CORS y CSRF
-
-CORS: Permite comunicación con el frontend Angular.
-
-CSRF: Deshabilitado por ser API REST con tokens.
-
-Se configura en SecurityConfig:
-
-http.csrf().disable()
-    .cors();
-
-👥 Roles y Autorización
-
-Se usan roles como:
-
-ROLE_ADMIN
-
-ROLE_USER
-
-Y se configuran permisos con:
-
-.hasRole("ADMIN")
-
-Se dejó OPTIONS libre para facilidades de validación en navegadores.
-
-El endpoint de login (/api/auth/login) está abierto para cualquier usuario con credenciales válidas.
-
-🔁 Flujo de Autenticación JWT
-
-El usuario envía user/password.
-
-AuthController valida y genera un JWT.
-
-El frontend guarda el token.
-
-Cada petición incluye el token en el header.
-
-JwtFilter valida el token en cada request.
-
-Spring Security autoriza el acceso según roles.
-
-🧠 Componentes de Seguridad
-
-CustomUserDetailsService → Carga usuario desde la base de datos.
-
-JwtUtil → Genera y valida tokens.
-
-JwtFilter → Intercepta peticiones y extrae el token.
-
-SecurityConfig → Configura filtros y reglas de acceso.
-
-Estos trabajan en conjunto para aplicar autenticación en todas las rutas.
-
-🧬 Entidades de Seguridad
-
-User → Usuario de sistema.
-
-Role → Roles asignados a cada usuario.
-
-Pueden tener relaciones ManyToMany para permitir múltiples roles por usuario.
-
-📤 Data Loader
-
-Se usa para generar usuarios iniciales automáticamente al iniciar la aplicación.
-Esto es útil para pruebas y para no tener que crear usuarios manualmente.
-
-🔑 AuthController
-
-Exponer endpoint público para login:
-
-POST /api/auth/login
-
-
-Envía credenciales y devuelve:
-
-JWT token
-
-Información del usuario
-
-📦 DTOs
-
-DTOs (Data Transfer Objects) se usan para separar los modelos internos de los cuerpos de request/response.
-
-Ejemplos:
-
-LoginRequest
-
-LoginResponse
-
-ProductDTO
-
-Ayudan a no exponer entidades directamente al cliente.
-
-📄 Notas Finales
-
-Proyecto estructurado con buenas prácticas de arquitectura, seguridad y separación de capas.
+- API stateless
+- JWT para seguridad
+- No se incluyó Swagger
+- Se priorizó claridad, seguridad y cumplimiento de requisitos
