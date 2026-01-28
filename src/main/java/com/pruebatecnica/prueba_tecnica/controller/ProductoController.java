@@ -16,7 +16,7 @@ import com.pruebatecnica.prueba_tecnica.service.ProductoService;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-//localhost:8080/api/v1
+//localhost:8080/api/productos
 @RequestMapping("/api/v1")
 public class ProductoController {
 
@@ -26,31 +26,31 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-    //localhost:8080/api/v1/products
+    //localhost:8080/api/productos
     @PostMapping("/products")
     public Producto crearProducto(@RequestBody Producto producto) {
         return productoService.crearProducto(producto);
     }
 
-    //localhost:8080/api/v1/products
+    //localhost:8080/api/productos
     @GetMapping("/products")
     public List<Producto> obtenerProductos() {
         return productoService.obtenerProductos();
     }
 
-    //localhost:8080/api/v1/products/1
+    //localhost:8080/api/productos/1
     @GetMapping("/products/{id}")
     public Producto obtenerProducto(@PathVariable Integer id) {
         return productoService.obtenerProducto(id);
     }
 
-    //localhost:8080/api/v1/products/1
+    //localhost:8080/api/productos/1
     @DeleteMapping("/products/{id}")
     public void eliminarProducto(@PathVariable Integer id) {
         productoService.eliminarProducto(id);
     }
 
-    //localhost:8080/api/v1/products/1
+    //localhost:8080/api/productos
     @PutMapping("/products/{id}")
     public Producto actualizarProducto(@PathVariable Integer id, @RequestBody Producto producto) {
         Producto productoDb = productoService.obtenerProducto(id);
