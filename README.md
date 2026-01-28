@@ -1,113 +1,132 @@
 # prueba-tecnica-cobranza-argentina
 prueba tecnica para el puesto de desarrollador jr
 
-📦 Backend - API Productos
+📦 Backend - API Cobranza Argentina
 📌 Descripción
 
-Este proyecto corresponde al backend de una aplicación CRUD desarrollada con Spring Boot.
-Proporciona una API REST segura mediante JWT para la gestión de productos y usuarios.
+Este proyecto es el backend de una aplicación para la gestión de cobranza, desarrollado con Spring Boot.
+Ofrece una API REST segura con Spring Security + JWT para la autenticación y autorización de usuarios, y permite manejar recursos como productos, usuarios y roles.
 
-⚙️ Instalación
+🚀 Funcionalidades Principales
 
-git clone repositorio
-
-cd backend
-
-mvn clean install
-
-mvn spring-boot:run
-
-🚀 Funcionalidades
-
-CRUD de productos
+CRUD completo
 
 Autenticación con JWT
 
 Gestión de usuarios y roles
 
-Autorización por roles
+Autorización por roles para proteger rutas
 
-Protección con Spring Security
+CORS configurado para Angular
 
-Persistencia con JPA
+Persistencia de datos con Spring Data JPA
 
-Validación de datos
+Carga de datos iniciales automática (DataLoader)
 
-Carga automática de usuarios
+Manejo de DTOs para solicitudes y respuestas
 
 🛠️ Tecnologías
+Tecnología	Versión
+Java	17+
+Spring Boot	3.x
+Spring Security	6.x
+Spring Data JPA	-
+JWT	-
+Maven	-
+Base de Datos	MySQL / PostgreSQL
 
-Java 17+
+⚙️ Cómo ejecutar
 
-Spring Boot
+Clonar el repositorio
 
-Spring Data JPA
+git clone https://github.com/enriqueamaral/prueba-tecnica-cobranza-argentina
 
-Spring Security
 
-JWT
+Entrar al proyecto
 
-MySQL / PostgreSQL
+cd prueba-tecnica-cobranza-argentina
 
-Maven
 
-Configurar application.properties con credenciales de BD.
+Configurar la base de datos en application.properties
+
+Construir y ejecutar
+
+mvn clean install
+
+mvn spring-boot:run
 
 📂 Estructura del Proyecto
 
-controller/
+src/main/java/.../
 
-service/
+├── controller/
 
-repository/
+├── service/
 
-entity/
+├── repository/
 
-security/
+├── entity/
 
-dto/
+├── security/
 
-config/
+├── dto/
 
-🏗️ Entities
+├── config/
 
-Las entidades representan las tablas de la base de datos.
+└── loader/
 
-Ejemplo: Product
+🧱 Entities (Tablas de BD)
+
+Las entidades representan las tablas de base de datos y se anotan así:
+
 @Entity
+
 @Table(name = "products")
+
+Explicación de anotaciones principales
+
+@Entity: Marca la clase como una entidad JPA.
+
+@Table(name = "..."): Define el nombre de la tabla.
+
+@Id + @GeneratedValue: Define la llave primaria generada automáticamente.
+
+@Column: Personaliza columnas (nullable, unique, etc).
+
+Esto permite que Hibernate mapee cada clase a una tabla física en la BD.
 
 📡 Controllers
 
+Los controladores exponen los endpoints de la API.
+
 Ejemplo: ProductController
 
-Expone los endpoints REST:
+Rutas principales:
 
-Método	Endpoint	Descripción
+Método	Ruta	Acción
 
-GET	/api/products	Listar
+GET	/api/products	Listar productos
 
-POST	/api/products	Crear
+POST	/api/products	Crear producto
 
 PUT	/api/products/{id}	Actualizar
 
 DELETE	/api/products/{id}	Eliminar
 
-Usa:
+Usan anotaciones como:
 
 @RestController
 
 @RequestMapping
 
-@GetMapping
-
-@PostMapping
+@GetMapping / @PostMapping / etc
 
 ⚙️ Services
 
-Implementan la lógica de negocio.
+La lógica de negocio está separada en servicios:
 
 Interfaz
+
 public interface ProductService
 
 Implementación
@@ -116,145 +135,120 @@ Implementación
 
 public class ProductServiceImpl
 
+Esto ayuda a mantener flexibilidad y permite implementar tests unitarios fácilmente.
 
-Separar interfaz e implementación facilita mantenimiento y pruebas.
+💾 Repositories
 
-💾 Repositories (JPA)
+Extienden de Spring Data JPA:
 
-Extienden:
+public interface ProductRepository extends JpaRepository<Product, Long>
 
-JpaRepository<Product, Long>
-
-
-Permite:
+Esto automáticamente te da métodos como:
 
 findAll()
+
+findById()
 
 save()
 
 deleteById()
 
-findById()
-
-Sin escribir SQL manual.
+Sin necesidad de escribir SQL manual.
 
 🔐 Seguridad (Spring Security + JWT)
 CORS y CSRF
 
-CORS: Permite conexión desde Angular
+CORS: Permite comunicación con el frontend Angular.
 
-CSRF: Deshabilitado para API REST con JWT
+CSRF: Deshabilitado por ser API REST con tokens.
 
-.csrf().disable()
+Se configura en SecurityConfig:
 
-.cors()
+http.csrf().disable()
+    .cors();
 
-Roles y Autorización
+👥 Roles y Autorización
+
+Se usan roles como:
 
 ROLE_ADMIN
 
 ROLE_USER
 
-Configuración:
+Y se configuran permisos con:
 
-hasRole("ADMIN")
+.hasRole("ADMIN")
 
-OPTIONS libre para validaciones del navegador.
+Se dejó OPTIONS libre para facilidades de validación en navegadores.
 
-Login público.
+El endpoint de login (/api/auth/login) está abierto para cualquier usuario con credenciales válidas.
 
-🔄 Flujo JWT
+🔁 Flujo de Autenticación JWT
 
-Usuario hace login
+El usuario envía user/password.
 
-AuthController valida credenciales
+AuthController valida y genera un JWT.
 
-Se genera JWT
+El frontend guarda el token.
 
-Front lo guarda
+Cada petición incluye el token en el header.
 
-Cada petición envía Authorization Header
+JwtFilter valida el token en cada request.
 
-JwtFilter valida token
+Spring Security autoriza el acceso según roles.
 
-Spring Security autoriza
+🧠 Componentes de Seguridad
 
-🧩 Componentes de Seguridad
-CustomUserDetailsService
+CustomUserDetailsService → Carga usuario desde la base de datos.
 
-Carga usuarios desde BD.
+JwtUtil → Genera y valida tokens.
 
-JwtUtil
+JwtFilter → Intercepta peticiones y extrae el token.
 
-Genera y valida tokens.
+SecurityConfig → Configura filtros y reglas de acceso.
 
-JwtFilter
+Estos trabajan en conjunto para aplicar autenticación en todas las rutas.
 
-Intercepta peticiones.
+🧬 Entidades de Seguridad
 
-SecurityConfig
+User → Usuario de sistema.
 
-Configura filtros y permisos.
+Role → Roles asignados a cada usuario.
 
-Trabajan juntos para autenticar usuarios.
+Pueden tener relaciones ManyToMany para permitir múltiples roles por usuario.
 
-🧠 Beans
+📤 Data Loader
 
-Los Beans son objetos gestionados por Spring.
-
-Ejemplo:
-
-@Bean
-
-public PasswordEncoder passwordEncoder()
-
-
-Permiten inyección automática.
-
-👥 Usuarios y Roles
-
-Entidades:
-
-User
-
-Role
-
-Relación ManyToMany.
-
-Permite asignar permisos.
-
-📥 DataLoader
-
-Genera usuarios iniciales automáticamente.
-
-Sirve para:
-
-Pruebas
-
-Evitar crear usuarios manualmente
-
-Ambiente demo
+Se usa para generar usuarios iniciales automáticamente al iniciar la aplicación.
+Esto es útil para pruebas y para no tener que crear usuarios manualmente.
 
 🔑 AuthController
 
-Endpoint de login:
+Exponer endpoint público para login:
 
 POST /api/auth/login
 
-Recibe credenciales y devuelve JWT.
+
+Envía credenciales y devuelve:
+
+JWT token
+
+Información del usuario
 
 📦 DTOs
 
-Separan modelo interno y datos externos.
+DTOs (Data Transfer Objects) se usan para separar los modelos internos de los cuerpos de request/response.
 
-Ejemplo:
+Ejemplos:
 
 LoginRequest
 
 LoginResponse
 
-Evita exponer entidades directamente.
+ProductDTO
+
+Ayudan a no exponer entidades directamente al cliente.
 
 📄 Notas Finales
 
-Proyecto enfocado en buenas prácticas, seguridad y arquitectura limpia.
+Proyecto estructurado con buenas prácticas de arquitectura, seguridad y separación de capas.
