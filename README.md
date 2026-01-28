@@ -133,12 +133,3 @@ Las contraseñas se almacenan cifradas con BCrypt.
 ```bash
 mvn spring-boot:run
 ```
-
----
-
-##  Notas finales
-
-- API stateless
-- JWT para seguridad
-- No se incluyó Swagger
-- Se priorizó claridad, seguridad y cumplimiento de requisitos
